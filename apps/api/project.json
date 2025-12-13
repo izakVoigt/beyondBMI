@@ -1,0 +1,77 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "/apps/api/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "{projectRoot}/src/main.ts",
+        "outputPath": "{workspaceRoot}/dist/apps/api",
+        "tsConfig": "{projectRoot}/tsconfig.app.json"
+      }
+    },
+    "serve": {
+      "configurations": {
+        "development": {
+          "buildTarget": "api:build:development"
+        },
+        "production": {
+          "buildTarget": "api:build:production"
+        }
+      },
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "api:build",
+        "runBuildTargetDependencies": false
+      }
+    },
+    "lint": {
+      "configurations": {
+        "fix": {
+          "fix": true
+        }
+      },
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "fix": false,
+        "lintFilePatterns": ["{projectRoot}"]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit --project {projectRoot}/tsconfig.json"
+      }
+    },
+    "test": {
+      "configurations": {
+        "e2e": {
+          "coverageDirectory": "{workspaceRoot}/coverage/e2e/{projectRoot}",
+          "testPathPatterns": ["\\.e2e.\\test\\.[tj]sx?$"]
+        },
+        "int": {
+          "coverageDirectory": "{workspaceRoot}/coverage/int/{projectRoot}",
+          "testPathPatterns": ["\\.int.\\test\\.[tj]sx?$"]
+        },
+        "unit": {
+          "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
+          "testPathPatterns": ["\\.unit.\\test\\.[tj]sx?$"]
+        }
+      },
+      "defaultConfiguration": "unit",
+      "executor": "@nx/jest:jest",
+      "options": {
+        "ci": true,
+        "codeCoverage": true,
+        "jestConfig": "{projectRoot}/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

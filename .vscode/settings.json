@@ -1,3 +1,6 @@
 {
-  "conventionalCommits.scopes": ["Monorepo"]
+  "conventionalCommits.scopes": [
+    "Monorepo",
+    "Api"
+  ]
 }
