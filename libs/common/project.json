@@ -1,0 +1,43 @@
+{
+  "name": "lib-common",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "/libs/common/src",
+  "projectType": "library",
+  "tags": ["platform:isomorphic", "scope:shared", "type:common"],
+  "targets": {
+    "lint": {
+      "configurations": {
+        "fix": {
+          "fix": true
+        }
+      },
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "fix": false,
+        "lintFilePatterns": ["{projectRoot}"]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit --project {projectRoot}/tsconfig.json"
+      }
+    },
+    "test": {
+      "configurations": {
+        "unit": {
+          "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
+          "testPathPatterns": ["\\.unit.\\test\\.[tj]sx?$"]
+        }
+      },
+      "defaultConfiguration": "unit",
+      "executor": "@nx/jest:jest",
+      "options": {
+        "ci": true,
+        "codeCoverage": true,
+        "jestConfig": "{projectRoot}/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}
