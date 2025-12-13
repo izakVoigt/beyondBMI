@@ -21,6 +21,9 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "esnext",
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types"],
+    "paths": {
+      "@libs/common/*": ["libs/common/src/*"]
+    }
   }
 }
