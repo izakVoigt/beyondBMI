@@ -4,6 +4,7 @@ import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import checkFilePlugin from 'eslint-plugin-check-file';
 import importPlugin from 'eslint-plugin-import';
+import jest from 'eslint-plugin-jest';
 import tsEslint from 'typescript-eslint';
 
 /**
@@ -18,6 +19,13 @@ export default [
   eslintConfigPrettier,
   {
     ignores: ['node_modules', '.nx', '**/dist'],
+  },
+  {
+    files: ['**/*.test.ts'],
+    languageOptions: {
+      globals: jest.environments.globals.globals,
+    },
+    plugins: { jest },
   },
   {
     files: ['**/*.{js,jsx,cjs,mjs,ts,tsx}'],

@@ -1,7 +1,8 @@
 {
   "conventionalCommits.scopes": [
     "Monorepo",
-    "Api"
+    "Api",
+    "Lib Common"
   ],
   "cSpell.words": [
     "nvmrc"

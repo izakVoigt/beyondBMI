@@ -27,7 +27,7 @@
       "configurations": {
         "unit": {
           "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
-          "testPathPatterns": ["\\.unit.\\test\\.[tj]sx?$"]
+          "testPathPatterns": ["\\.unit\\.test\\.[tj]sx?$"]
         }
       },
       "defaultConfiguration": "unit",
