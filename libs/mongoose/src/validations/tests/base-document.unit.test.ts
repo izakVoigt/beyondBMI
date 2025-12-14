@@ -78,16 +78,4 @@ describe('baseDocumentSchema', () => {
       expect(zodError.issues[0]?.message).toBe('"updatedAt" must be a valid date');
     }
   });
-
-  it('should strip unknown properties by default', () => {
-    const doc = {
-      ...createValidDocument(),
-      extraField: faker.string.sample(),
-    };
-
-    const result = baseDocumentSchema.parse(doc);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((result as any).extraField).toBeUndefined();
-  });
 });

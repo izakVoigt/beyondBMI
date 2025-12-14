@@ -1,6 +1,5 @@
+import { objectIdRegex } from '@libs/common/regex/object-id';
 import z from 'zod';
-
-import { objectIdRegex } from '../regex/object-id';
 
 /**
  * Base Zod schema representing common MongoDB document properties.
@@ -16,24 +15,26 @@ import { objectIdRegex } from '../regex/object-id';
  * This schema should be used at the API, DTO, or contract layer to ensure
  * data integrity before interacting with the persistence layer.
  */
-export const baseDocumentSchema = z.object({
-  /**
-   * Unique MongoDB document identifier.
-   *
-   * Must be a valid 24-character hexadecimal ObjectId string.
-   */
-  _id: z.string('"_id" must be a string').regex(objectIdRegex, '"_id" must be a valid ObjectId'),
+export const baseDocumentSchema = z
+  .object({
+    /**
+     * Unique MongoDB document identifier.
+     *
+     * Must be a valid 24-character hexadecimal ObjectId string.
+     */
+    _id: z.string({ message: '"_id" must be a string' }).regex(objectIdRegex, '"_id" must be a valid ObjectId'),
 
-  /**
-   * Timestamp indicating when the document was created.
-   */
-  createdAt: z.date('"createdAt" must be a valid date'),
+    /**
+     * Timestamp indicating when the document was created.
+     */
+    createdAt: z.date({ message: '"createdAt" must be a valid date' }),
 
-  /**
-   * Timestamp indicating when the document was last updated.
-   */
-  updatedAt: z.date('"updatedAt" must be a valid date'),
-});
+    /**
+     * Timestamp indicating when the document was last updated.
+     */
+    updatedAt: z.date({ message: '"updatedAt" must be a valid date' }),
+  })
+  .strict();
 
 /**
  * Type inferred from {@link baseDocumentSchema}.
