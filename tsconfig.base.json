@@ -24,7 +24,8 @@
     "typeRoots": ["node_modules/@types"],
     "paths": {
       "@libs/booking/*": ["libs/booking/src/*"],
-      "@libs/common/*": ["libs/common/src/*"]
+      "@libs/common/*": ["libs/common/src/*"],
+      "@libs/mongoose/*": ["libs/mongoose/src/*"]
     }
   }
 }

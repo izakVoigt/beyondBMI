@@ -19,6 +19,7 @@ export default {
   moduleNameMapper: {
     '^@libs/booking/(.*)$': '<rootDir>/../../libs/booking/src/$1',
     '^@libs/common/(.*)$': '<rootDir>/../../libs/common/src/$1',
+    '^@libs/mongoose/(.*)$': '<rootDir>/../../libs/mongoose/src/$1',
   },
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
