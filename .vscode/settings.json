@@ -2,10 +2,13 @@
   "conventionalCommits.scopes": [
     "Monorepo",
     "Api",
-    "Lib Common"
+    "Lib Common",
+    "Lib Booking",
+    "Lib Mongoose"
   ],
   "cSpell.words": [
     "healthcheck",
+    "maxlength",
     "mongosh",
     "nvmrc",
     "treeify"

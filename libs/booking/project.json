@@ -25,6 +25,10 @@
     },
     "test": {
       "configurations": {
+        "int": {
+          "coverageDirectory": "{workspaceRoot}/coverage/int/{projectRoot}",
+          "testPathPatterns": ["\\.int.\\test\\.[tj]sx?$"]
+        },
         "unit": {
           "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
           "testPathPatterns": ["\\.unit\\.test\\.[tj]sx?$"]
