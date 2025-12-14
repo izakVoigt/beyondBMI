@@ -3,15 +3,22 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "/apps/api/src",
   "projectType": "application",
-  "tags": [],
+  "tags": ["platform:server", "scope:app", "type:api"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/esbuild:esbuild",
       "options": {
+        "assets": ["{projectRoot}/src/assets"],
+        "bundle": true,
+        "format": ["cjs"],
+        "generatePackageJson": true,
         "main": "{projectRoot}/src/main.ts",
-        "outputPath": "{workspaceRoot}/dist/apps/api",
+        "outputPath": "dist/apps/api",
+        "platform": "node",
+        "sourcemap": true,
         "tsConfig": "{projectRoot}/tsconfig.app.json"
-      }
+      },
+      "outputs": ["{options.outputPath}"]
     },
     "serve": {
       "configurations": {

@@ -16,6 +16,9 @@ export default {
   },
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['js', 'ts'],
+  moduleNameMapper: {
+    '^@libs/common/(.*)$': '<rootDir>/../../libs/common/src/$1',
+  },
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
