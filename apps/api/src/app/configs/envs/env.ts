@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import type { Env } from './validation';
-
-import { z } from 'zod';
+import type { ZodError } from 'zod';
 
 import { envValidationSchema } from './validation';
 
@@ -36,12 +35,11 @@ export const getEnv = (): Readonly<Env> => {
   const parsed = envValidationSchema.safeParse(process.env);
 
   if (!parsed.success) {
-    const formatted = z.treeifyError(parsed.error);
-    const message = Object.entries(formatted.properties ?? {}).flatMap(([key, value]) =>
-      (value.errors ?? []).map(message => `${key}: ${message}`),
-    );
+    const error: ZodError = parsed.error;
 
-    throw new Error(`Invalid environment variables: ${message.join(', ')}`);
+    const message = error.issues.map(issue => `${issue.path.join('.') || '(root)'}: ${issue.message}`).join(', ');
+
+    throw new Error(`Invalid environment variables: ${message}`);
   }
 
   cachedEnvs = Object.freeze(parsed.data);

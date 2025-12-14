@@ -36,7 +36,9 @@ export const envValidationSchema = z.object({
    * variable and is used to control environment-specific behavior
    * such as logging, feature flags, and error handling.
    */
-  NODE_ENV: z.enum(NodeEnv, `"NODE_ENV" must be one of the following: ${Object.values(NodeEnv).join(', ')}`),
+  NODE_ENV: z.enum(Object.values(NodeEnv) as [string, ...string[]], {
+    message: `"NODE_ENV" must be one of the following: ${Object.values(NodeEnv).join(', ')}`,
+  }),
 
   /**
    * Port on which the HTTP server will listen.
