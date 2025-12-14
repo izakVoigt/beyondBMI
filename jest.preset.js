@@ -17,6 +17,7 @@ export default {
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['js', 'ts'],
   moduleNameMapper: {
+    '^@libs/booking/(.*)$': '<rootDir>/../../libs/booking/src/$1',
     '^@libs/common/(.*)$': '<rootDir>/../../libs/common/src/$1',
   },
   transform: {

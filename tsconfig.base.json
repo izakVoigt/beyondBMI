@@ -23,6 +23,7 @@
     "target": "esnext",
     "typeRoots": ["node_modules/@types"],
     "paths": {
+      "@libs/booking/*": ["libs/booking/src/*"],
       "@libs/common/*": ["libs/common/src/*"]
     }
   }
