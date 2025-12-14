@@ -5,6 +5,8 @@
     "Lib Common"
   ],
   "cSpell.words": [
+    "healthcheck",
+    "mongosh",
     "nvmrc",
     "treeify"
   ]

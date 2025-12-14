@@ -2,6 +2,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 
+import { mongoDbConnect, mongoDbDisconnect } from './app/configs/databases/mongodb';
 import { env } from './app/configs/envs/env';
 import { httpLogger } from './app/configs/logger/http-logger';
 import { logger } from './app/configs/logger/logger';
@@ -21,11 +22,30 @@ app.get('/api', (req, res) => {
 });
 
 app.use((_req, res) => {
-  res.status(400).json({ message: 'Route not found' });
+  res.status(404).json({ message: 'Route not found' });
 });
 
-const server = app.listen(PORT, () => {
-  logger.info(`Listening at http://localhost:${PORT}`);
-});
+const bootstrap = async (): Promise<void> => {
+  await mongoDbConnect();
 
-server.on('error', error => logger.error({ error }, 'Server error'));
+  const server = app.listen(PORT, () => {
+    logger.info(`Listening at http://localhost:${PORT}`);
+  });
+
+  server.on('error', error => logger.error({ error }, 'Server error'));
+
+  const shutdown = async (signal: string): Promise<void> => {
+    logger.info(`Received shutdown signal: ${signal}`);
+
+    server.close(async () => {
+      await mongoDbDisconnect();
+
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+};
+
+bootstrap();

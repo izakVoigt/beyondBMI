@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "npx nx run-many --target=build --parallel=5",
-    "serve": "npx nx run-many --target=serve --parallel=5",
+    "serve": "bash -lc 'set -e; docker compose up --build -d; trap \"docker compose stop\" EXIT INT TERM; npx nx run-many --target=serve --parallel=5'",
     "lint:check": "npx nx run-many --target=lint --parallel=5",
     "lint:fix": "npx nx run-many --target=lint:fix --parallel=5",
     "format:check": "npx nx format:check --all --parallel=5",
@@ -37,6 +37,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
+    "@types/mongoose": "^5.11.96",
     "@types/node": "25.0.1",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
     "esbuild": "^0.27.1",
@@ -63,6 +64,7 @@
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "helmet": "^8.1.0",
+    "mongoose": "^9.0.1",
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",
     "zod": "^4.1.13"
