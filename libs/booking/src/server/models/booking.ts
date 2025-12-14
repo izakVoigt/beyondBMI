@@ -1,4 +1,4 @@
-import type { BookingMongoDb } from '@libs/booking/common/validations/booking';
+import type { BookingMongoDb } from '@libs/booking/common/validations/booking-mongodb';
 
 import { BookingStatus } from '@libs/booking/common/enums/status';
 import { isAlignedToSlot } from '@libs/booking/common/utils/is-aligned-to-slot';
