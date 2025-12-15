@@ -23,24 +23,26 @@
         "command": "tsc --noEmit --project {projectRoot}/tsconfig.json"
       }
     },
-    "test": {
-      "configurations": {
-        "int": {
-          "coverageDirectory": "{workspaceRoot}/coverage/int/{projectRoot}",
-          "testPathPatterns": ["\\.int.\\test\\.[tj]sx?$"]
-        },
-        "unit": {
-          "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
-          "testPathPatterns": ["\\.unit\\.test\\.[tj]sx?$"]
-        }
-      },
-      "defaultConfiguration": "unit",
+    "test-int": {
       "executor": "@nx/jest:jest",
       "options": {
         "ci": true,
         "codeCoverage": true,
-        "jestConfig": "{projectRoot}/jest.config.ts",
-        "passWithNoTests": true
+        "coverageDirectory": "{workspaceRoot}/coverage/int/{projectRoot}",
+        "jestConfig": "{projectRoot}/jest.int.config.ts",
+        "passWithNoTests": true,
+        "testPathPatterns": ["\\.int\\.test\\.[tj]sx?$"]
+      }
+    },
+    "test-unit": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "ci": true,
+        "codeCoverage": true,
+        "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
+        "jestConfig": "{projectRoot}/jest.unit.config.ts",
+        "passWithNoTests": true,
+        "testPathPatterns": ["\\.unit\\.test\\.[tj]sx?$"]
       }
     }
   }

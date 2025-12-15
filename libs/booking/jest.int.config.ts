@@ -1,10 +1,10 @@
 import type { Config } from 'jest';
 
-const testConfigs: Config = {
-  coveragePathIgnorePatterns: ['<rootDir>/src/common/contracts/'],
+const intTestConfigs: Config = {
+  coveragePathIgnorePatterns: ['<rootDir>/src/common/'],
   displayName: 'lib-booking',
   preset: '../../jest.preset.js',
   testEnvironment: 'node',
 };
 
-export default testConfigs;
+export default intTestConfigs;
