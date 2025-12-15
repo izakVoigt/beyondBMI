@@ -23,20 +23,15 @@
         "command": "tsc --noEmit --project {projectRoot}/tsconfig.json"
       }
     },
-    "test": {
-      "configurations": {
-        "unit": {
-          "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
-          "testPathPatterns": ["\\.unit\\.test\\.[tj]sx?$"]
-        }
-      },
-      "defaultConfiguration": "unit",
+    "test-unit": {
       "executor": "@nx/jest:jest",
       "options": {
         "ci": true,
         "codeCoverage": true,
+        "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
         "jestConfig": "{projectRoot}/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "testPathPatterns": ["\\.unit\\.test\\.[tj]sx?$"]
       }
     }
   }
