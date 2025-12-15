@@ -17,9 +17,9 @@
     "format:uncommitted": "npx nx format:write --uncommitted --parallel=5",
     "format:untracked": "npx nx format:write --untracked --parallel=5",
     "typecheck": "npx nx run-many --target=typecheck --parallel=5",
-    "test:e2e": "npx nx run-many --target=test --configuration=e2e --parallel=5",
-    "test:int": "npx nx run-many --target=test --configuration=int --parallel=5",
-    "test:unit": "npx nx run-many --target=test --configuration=unit --parallel=5"
+    "test:e2e": "npx nx run-many --target=test-e2e --parallel=5",
+    "test:int": "npx nx run-many --target=test-int --parallel=5",
+    "test:unit": "npx nx run-many --target=test-unit --parallel=5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
@@ -68,10 +68,10 @@
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "helmet": "^8.1.0",
-    "http-status-codes": "^2.3.0",
     "mongoose": "^9.0.1",
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",
+    "stripe": "^20.0.0",
     "zod": "^3.25.76"
   }
 }
