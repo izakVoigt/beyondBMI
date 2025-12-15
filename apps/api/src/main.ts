@@ -1,3 +1,5 @@
+import { bookingContract } from '@libs/booking/common/contracts/booking';
+import { createExpressEndpoints } from '@ts-rest/express';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
@@ -6,6 +8,7 @@ import { mongoDbConnect, mongoDbDisconnect } from './app/configs/databases/mongo
 import { env } from './app/configs/envs/env';
 import { httpLogger } from './app/configs/logger/http-logger';
 import { logger } from './app/configs/logger/logger';
+import { bookingRouter } from './app/routes/booking';
 
 const { PORT } = env;
 
@@ -17,9 +20,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(httpLogger);
 
-app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to api!' });
-});
+createExpressEndpoints(bookingContract, bookingRouter, app);
 
 app.use((_req, res) => {
   res.status(404).json({ message: 'Route not found' });
