@@ -6,12 +6,13 @@ import mongoose from 'mongoose';
 
 import { BookingModel } from '../booking';
 
-const alignedDate = (): Date => {
+const alignedDateTime = (): Date => {
   const base = Date.UTC(2025, 0, 1, 10, 0, 0, 0);
+
   return new Date(base - (base % BOOKING_TIME_MS));
 };
 
-describe('BookingModel (unique startDate index)', () => {
+describe('BookingModel', () => {
   let mongo: MongoMemoryServer;
 
   beforeAll(async () => {
@@ -30,25 +31,23 @@ describe('BookingModel (unique startDate index)', () => {
     await BookingModel.deleteMany({});
   });
 
-  it('should not allow two bookings with the same startDate', async () => {
-    const startDate = alignedDate();
+  it('should not allow two bookings with the same dateTime', async () => {
+    const dateTime = alignedDateTime();
 
     await BookingModel.create({
+      dateTime,
       email: faker.internet.email().toLowerCase(),
       name: faker.person.fullName(),
-      startDate,
       status: BookingStatus.CONFIRMED,
     });
 
     await expect(
       BookingModel.create({
+        dateTime,
         email: faker.internet.email().toLowerCase(),
         name: faker.person.fullName(),
-        startDate,
         status: BookingStatus.PENDING,
       }),
-    ).rejects.toMatchObject({
-      code: 11000,
-    });
+    ).rejects.toMatchObject({ code: 11000 });
   });
 });

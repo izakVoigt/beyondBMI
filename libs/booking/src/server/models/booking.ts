@@ -11,10 +11,28 @@ import { model, Schema } from 'mongoose';
  * @remarks
  * - `timestamps: true` adds `createdAt` and `updatedAt`.
  * - `optimisticConcurrency: true` helps prevent lost updates in concurrent writes.
- * - `strict: 'throw'` rejects unknown fields at save-time.
+ * - `strict: true` rejects unknown fields at save-time.
  */
 export const bookingModel = new Schema<BookingMongoDb>(
   {
+    /**
+     * Slot start date/time (UTC).
+     *
+     * @remarks
+     * Must align exactly to the slot boundary configured by the system
+     * (e.g. 30 minutes). Alignment is validated using {@link isAlignedToSlot}.
+     *
+     * Store in UTC. Convert to/from local time at the API boundary.
+     */
+    dateTime: {
+      required: [true, '"dateTime" is required'],
+      type: Date,
+      validate: {
+        message: '"dateTime" must be aligned to 30-minute boundaries (e.g. HH:00:00.000 or HH:30:00.000, UTC)',
+        validator: (value: unknown): boolean => value instanceof Date && isAlignedToSlot(value),
+      },
+    },
+
     /**
      * Customer email address.
      *
@@ -25,7 +43,7 @@ export const bookingModel = new Schema<BookingMongoDb>(
     email: {
       lowercase: true,
       match: [emailRegex, '"email" must be a valid email'],
-      maxlength: [120, '"email" must be at most 120 characters long'],
+      maxlength: [254, '"email" must be at most 254 characters long'],
       required: [true, '"email" is required'],
       trim: true,
       type: String,
@@ -46,21 +64,15 @@ export const bookingModel = new Schema<BookingMongoDb>(
     },
 
     /**
-     * Slot start date/time (UTC).
+     * Stripe PaymentIntent identifier associated with the booking payment.
      *
      * @remarks
-     * Must align exactly to the slot boundary configured by the system
-     * (e.g. 30 minutes). The alignment check is performed by {@link isAlignedToSlot}.
-     *
-     * Store in UTC. Convert to/from local time at the API boundary.
+     * - Present when payment has been initialized.
+     * - May be absent for bookings that have not reached the payment stage.
      */
-    startDate: {
-      required: [true, '"startDate" is required'],
-      type: Date,
-      validate: {
-        message: '"startDate" must be aligned to 30-minute boundaries (e.g. HH:00:00.000 or HH:30:00.000, UTC)',
-        validator: (value: unknown): boolean => value instanceof Date && isAlignedToSlot(value),
-      },
+    paymentIntentId: {
+      trim: true,
+      type: String,
     },
 
     /**
@@ -86,8 +98,8 @@ export const bookingModel = new Schema<BookingMongoDb>(
  * Prevent double-booking for the same slot start.
  *
  * @remarks
- * This enforces a single booking per startDate globally.
+ * Enforces a single booking per slot start (`dateTime`) globally.
  */
-bookingModel.index({ startDate: 1 }, { unique: true });
+bookingModel.index({ dateTime: 1 }, { unique: true });
 
 export const BookingModel = model<BookingMongoDb>('bookings', bookingModel);
