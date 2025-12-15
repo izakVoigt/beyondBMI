@@ -5,23 +5,45 @@ import { bookingStatusSchema } from './booking-status';
 import { isAlignedToSlot } from '../utils/is-aligned-to-slot';
 
 /**
- * Zod schema used to validate booking payloads at the API boundary.
+ * Zod schema used to validate booking mutation payloads at the API boundary.
  *
  * @remarks
- * - This schema is intended for request/response validation (HTTP layer).
+ * This schema represents the **client-facing booking payload** used when
+ * creating or updating a booking.
+ *
+ * Responsibilities:
+ * - Validate data types and formats (email, name, date)
+ * - Enforce booking slot alignment rules
+ * - Provide fast, user-friendly validation errors
+ *
+ * Notes:
  * - Database-level constraints (indexes, uniqueness, etc.) are enforced separately
- *   in the Mongoose schema, but key rules (such as slot alignment) are also validated
- *   here to provide immediate, user-friendly feedback.
- * - Keep this schema in sync with the domain and persistence models.
+ *   in the persistence layer (Mongoose).
+ * - Slot alignment is validated both here and at persistence level to avoid
+ *   inconsistent or invalid bookings.
+ * - All dates are expected to be provided in **UTC**.
  */
 export const bookingMutateSchema = z
   .object({
+    /**
+     * Booking slot start date and time.
+     *
+     * @remarks
+     * - Must be a valid JavaScript {@link Date} instance.
+     * - Must be aligned to the configured booking slot boundaries
+     * - Expected to be normalized to UTC.
+     */
+    dateTime: z.date({ message: '"dateTime" must be a valid date' }).refine(value => isAlignedToSlot(value), {
+      message: '"dateTime" must be aligned to the booking slot boundaries (UTC)',
+    }),
+
     /**
      * Customer email address.
      *
      * @remarks
      * - Must be a valid email format.
-     * - Stored/normalized at persistence level (e.g. lowercase).
+     * - Length is capped to prevent invalid or abusive input.
+     * - Normalization (e.g. lowercasing) is handled at persistence level.
      */
     email: z
       .string({ message: '"email" must be a string' })
@@ -32,7 +54,7 @@ export const bookingMutateSchema = z
      * Customer full name.
      *
      * @remarks
-     * Used for display and auditing purposes.
+     * - Used for display, auditing and customer identification.
      */
     name: z
       .string({ message: '"name" must be a string' })
@@ -40,33 +62,19 @@ export const bookingMutateSchema = z
       .min(2, '"name" must be at least 2 characters long'),
 
     /**
-     * Slot start date/time.
-     *
-     * @remarks
-     * - Expected to be a valid JavaScript `Date`.
-     * - Must align to the configured booking slot boundaries (e.g. 30 minutes).
-     * - This rule is validated both here (API boundary) and at persistence level.
-     */
-    startDate: z.date({ message: '"startDate" must be a valid date' }).refine(value => isAlignedToSlot(value), {
-      message: '"startDate" must be aligned to the booking slot boundaries (UTC)',
-    }),
-
-    /**
      * Booking status.
-     *
-     * @remarks
-     * - Optional at API level.
-     * - Defaults to {@link BookingStatus.PENDING} at persistence level if omitted.
      */
-    status: bookingStatusSchema.optional(),
+    status: bookingStatusSchema,
   })
   .strict();
 
 /**
- * Booking domain type inferred from {@link bookingSchema}.
+ * TypeScript representation of a validated booking mutation payload.
  *
  * @remarks
- * Represents the validated shape of a booking at the application layer,
- * before persistence-specific fields are added.
+ * This type represents the booking data after API-level validation
+ * and before persistence-specific fields are added.
+ *
+ * @see {@link bookingMutateSchema}
  */
 export type BookingMutate = z.infer<typeof bookingMutateSchema>;

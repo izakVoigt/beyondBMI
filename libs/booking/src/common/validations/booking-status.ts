@@ -5,13 +5,34 @@ import { BookingStatus } from '../enums/status';
 /**
  * Zod schema representing the status of a booking.
  *
- * @validation
- * - Must be one of the predefined BookingStatus values.
- * - Custom error message returned if validation fails.
+ * @remarks
+ * This schema restricts the booking status to one of the predefined
+ * {@link BookingStatus} enum values.
  *
- * @usage
- * - Used in API contracts, route parameters, or request/response bodies.
+ * It is commonly used:
+ * - At the API boundary (request/response validation)
+ * - In route parameters and payloads
+ * - As part of larger booking-related schemas
+ *
+ * A custom error message is returned when validation fails,
+ * explicitly listing the allowed values.
  */
 export const bookingStatusSchema = z.enum(Object.values(BookingStatus) as [string, ...string[]], {
   message: `"status" must be one of: ${Object.values(BookingStatus).join(', ')}`,
 });
+
+/**
+ * Schema representing a booking status response payload.
+ *
+ * @remarks
+ * Typically used by endpoints that update or return the current
+ * status of a booking (e.g. cancel, confirm payment).
+ */
+export const bookingStatusReturn = z
+  .object({
+    /**
+     * Current status of the booking.
+     */
+    bookingStatus: bookingStatusSchema,
+  })
+  .strict();

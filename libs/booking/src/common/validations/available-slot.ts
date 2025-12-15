@@ -1,17 +1,50 @@
 import { z } from 'zod';
 
 /**
- * Schema representing an available booking slot.
- *
- * @property slot - A valid JavaScript Date object representing the start time of the slot.
+ * Schema representing a single available booking slot.
  *
  * @remarks
- * - Must be aligned to predefined booking boundaries (e.g., every 30 minutes).
- * - Should be in UTC to ensure consistency across time zones.
+ * A slot represents the **start time** of a bookable interval.
+ * and is not encoded in this schema.
+ *
+ * All slots:
+ * - Must be aligned to predefined booking boundaries.
+ * - Must fall within configured business hours.
+ * - Must be represented in **UTC** to avoid time zone inconsistencies.
  */
-export const availableSlotSchema = z.object({ slot: z.date({ message: '"slot" must be a valid date' }) }).strict();
+export const availableSlotSchema = z
+  .object({
+    /**
+     * Start date and time of the booking slot.
+     *
+     * @remarks
+     * - Represents the exact start of the slot interval.
+     * - Must be a valid JavaScript {@link Date} instance.
+     * - Expected to be normalized to UTC.
+     */
+    slot: z.date({ message: '"slot" must be a valid date' }),
+  })
+  .strict();
 
 /**
- * TypeScript type inferred from {@link availableSlot}.
+ * TypeScript representation of a single available booking slot.
+ *
+ * @see {@link availableSlotSchema}
  */
 export type AvailableSlot = z.infer<typeof availableSlotSchema>;
+
+/**
+ * Schema representing a collection of available booking slots.
+ *
+ * @remarks
+ * - Typically returned by availability lookup endpoints.
+ * - The array is expected to be sorted in ascending chronological order.
+ */
+export const availableSlotArraySchema = z.array(availableSlotSchema);
+
+/**
+ * TypeScript representation of an array of available booking slots.
+ *
+ * @see {@link availableSlotArraySchema}
+ */
+export type AvailableSlotArray = z.infer<typeof availableSlotArraySchema>;
