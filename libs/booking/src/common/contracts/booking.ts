@@ -1,35 +1,46 @@
 import { contractErrorSchema } from '@libs/common/validations/contract-error';
 import { initContract } from '@ts-rest/core';
-import { StatusCodes } from 'http-status-codes';
-import { z } from 'zod';
 
-import { availableSlotSchema } from '../validations/available-slot';
-import { bookingMongoDbSchema } from '../validations/booking-mongodb';
+import { availableSlotArraySchema } from '../validations/available-slot';
+import { bookingMongoDbArraySchema, bookingMongoDbSchema } from '../validations/booking-mongodb';
 import { bookingMutateSchema } from '../validations/booking-mutate';
-import { bookingQueryParamsSchema } from '../validations/booking-query';
-import { bookingStatusSchema } from '../validations/booking-status';
+import { bookingPaymentSchema } from '../validations/booking-payment';
+import { bookingQueryParamsSchema, bookingQuerySearchSchema } from '../validations/booking-query';
+import { bookingStatusReturn } from '../validations/booking-status';
 
 const contract = initContract();
 
 /**
  * Booking contract for the ts-rest API.
  *
- * This contract defines all backend routes for the booking system,
- * including creation, cancellation, payment processing, and querying.
+ * @remarks
+ * This contract defines all backend routes related to the booking lifecycle,
+ * including:
+ * - Slot availability lookup
+ * - Booking creation and cancellation
+ * - Payment initialization and confirmation
+ * - Querying booked appointments
+ *
+ * All routes are strongly typed using Zod schemas and are intended to be
+ * consumed by web and mobile clients.
  */
 export const bookingContract = contract.router({
   /**
-   * Cancel a booking by its ID.
+   * Cancel an existing booking by its identifier.
    *
    * @method POST
    * @path /:bookingId/cancel
    *
    * @pathParams
-   * - bookingId: string (valid MongoDB ObjectId)
+   * - bookingId: MongoDB ObjectId identifying the booking
+   *
+   * @remarks
+   * - A cancelled booking frees up its associated time slot.
+   * - Cancelling an already cancelled booking is idempotent.
    *
    * @responses
-   * - 200: Returns the updated booking status (typically CANCELLED)
-   * - 400: Validation error (e.g., invalid ID)
+   * - 200: Booking successfully cancelled
+   * - 400: Invalid booking identifier
    * - 404: Booking not found
    */
   cancelBooking: {
@@ -38,76 +49,132 @@ export const bookingContract = contract.router({
     path: '/:bookingId/cancel',
     pathParams: bookingQueryParamsSchema,
     responses: {
-      [StatusCodes.OK]: z.object({ status: bookingStatusSchema }),
-      [StatusCodes.BAD_REQUEST]: contractErrorSchema,
-      [StatusCodes.NOT_FOUND]: contractErrorSchema,
+      200: bookingStatusReturn,
+      400: contractErrorSchema,
+      404: contractErrorSchema,
     },
+    summary: 'Cancel an existing booking',
   },
 
   /**
-   * Create a new booking.
+   * Confirm a booking after a successful payment.
+   *
+   * @method POST
+   * @path /:bookingId/pay/confirm
+   *
+   * @pathParams
+   * - bookingId: MongoDB ObjectId identifying the booking
+   *
+   * @remarks
+   * - If the booking is already confirmed, the operation is idempotent.
+   *
+   * @responses
+   * - 200: Booking payment confirmed and status updated
+   * - 400: Payment not completed or invalid state
+   * - 404: Booking not found
+   */
+  confirmBooking: {
+    body: contract.type<void>(),
+    method: 'POST',
+    path: '/:bookingId/pay/confirm',
+    pathParams: bookingQueryParamsSchema,
+    responses: {
+      200: bookingStatusReturn,
+      400: contractErrorSchema,
+      404: contractErrorSchema,
+    },
+    summary: 'Confirm booking payment',
+  },
+
+  /**
+   * Create a new booking for a given time slot.
    *
    * @method POST
    * @path /book
    *
+   * @remarks
+   * - Bookings are created in a non-confirmed state until payment is completed.
+   * - Attempting to book an already occupied slot results in a validation error.
+   *
    * @responses
-   * - 201: Returns the created booking document
+   * - 201: Booking successfully created
+   * - 400: Slot already booked or invalid input
    */
   createBooking: {
     body: bookingMutateSchema,
     method: 'POST',
     path: '/book',
     responses: {
-      [StatusCodes.CREATED]: bookingMongoDbSchema,
+      201: bookingMongoDbSchema,
+      400: contractErrorSchema,
     },
+    summary: 'Create a new booking',
   },
 
   /**
-   * List available booking slots.
+   * List all available booking slots within a given date range.
    *
    * @method GET
    * @path /
    *
+   * @remarks
+   * - Slots are generated in fixed intervals (e.g. 30 minutes).
+   * - Only slots within business hours are returned.
+   * - Slots already booked (and not cancelled) are excluded.
+   *
    * @responses
-   * - 200: Returns an array of available slots with metadata
+   * - 200: Array of available booking slots
    */
   listAvailableSlots: {
     method: 'GET',
     path: '/',
+    query: bookingQuerySearchSchema,
     responses: {
-      [StatusCodes.OK]: z.array(availableSlotSchema),
+      200: availableSlotArraySchema,
     },
+    summary: 'List available booking slots',
   },
 
   /**
-   * List all booked appointments.
+   * List all booked appointments within a given date range.
    *
    * @method GET
    * @path /booked
    *
+   * @remarks
+   * - Includes all bookings regardless of status.
+   * - Intended for administrative or reporting purposes.
+   *
    * @responses
-   * - 200: Returns an array of all booked slots
+   * - 200: Array of booked appointments
    */
   listBookedSlots: {
     method: 'GET',
     path: '/booked',
+    query: bookingQuerySearchSchema,
     responses: {
-      [StatusCodes.OK]: z.array(bookingMongoDbSchema),
+      200: bookingMongoDbArraySchema,
     },
+    summary: 'List booked appointments',
   },
 
   /**
-   * Process payment for a given booking.
+   * Initialize payment for a given booking.
    *
    * @method POST
    * @path /:bookingId/pay
    *
    * @pathParams
-   * - bookingId: string (valid MongoDB ObjectId)
+   * - bookingId: MongoDB ObjectId identifying the booking
+   *
+   * @remarks
+   * - Creates a payment intent with the payment provider.
+   * - Does not immediately confirm the booking.
+   * - The client is expected to complete the payment using the returned data.
    *
    * @responses
-   * - 200: Returns the updated booking status (typically CONFIRMED)
-   * - 400: Invalid request (e.g., already paid or payment failed)
+   * - 200: Payment initialized successfully
+   * - 400: Invalid request or booking already paid
    * - 404: Booking not found
    */
   processPayment: {
@@ -116,9 +183,10 @@ export const bookingContract = contract.router({
     path: '/:bookingId/pay',
     pathParams: bookingQueryParamsSchema,
     responses: {
-      [StatusCodes.OK]: z.object({ status: bookingStatusSchema }),
-      [StatusCodes.BAD_REQUEST]: contractErrorSchema,
-      [StatusCodes.NOT_FOUND]: contractErrorSchema,
+      200: bookingPaymentSchema,
+      400: contractErrorSchema,
+      404: contractErrorSchema,
     },
+    summary: 'Initialize booking payment',
   },
 });
