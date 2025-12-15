@@ -29,7 +29,7 @@
         "ci": true,
         "codeCoverage": true,
         "coverageDirectory": "{workspaceRoot}/coverage/unit/{projectRoot}",
-        "jestConfig": "{projectRoot}/jest.config.ts",
+        "jestConfig": "{projectRoot}/jest.unit.config.ts",
         "passWithNoTests": true,
         "testPathPatterns": ["\\.unit\\.test\\.[tj]sx?$"]
       }
