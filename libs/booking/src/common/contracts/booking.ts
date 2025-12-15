@@ -46,7 +46,7 @@ export const bookingContract = contract.router({
   cancelBooking: {
     body: contract.type<void>(),
     method: 'POST',
-    path: '/:bookingId/cancel',
+    path: '/api/appointments/:bookingId/cancel',
     pathParams: bookingQueryParamsSchema,
     responses: {
       200: bookingStatusReturn,
@@ -76,7 +76,7 @@ export const bookingContract = contract.router({
   confirmBooking: {
     body: contract.type<void>(),
     method: 'POST',
-    path: '/:bookingId/pay/confirm',
+    path: '/api/appointments/:bookingId/pay/confirm',
     pathParams: bookingQueryParamsSchema,
     responses: {
       200: bookingStatusReturn,
@@ -103,7 +103,7 @@ export const bookingContract = contract.router({
   createBooking: {
     body: bookingMutateSchema,
     method: 'POST',
-    path: '/book',
+    path: '/api/appointments/book',
     responses: {
       201: bookingMongoDbSchema,
       400: contractErrorSchema,
@@ -127,7 +127,7 @@ export const bookingContract = contract.router({
    */
   listAvailableSlots: {
     method: 'GET',
-    path: '/',
+    path: '/api/appointments',
     query: bookingQuerySearchSchema,
     responses: {
       200: availableSlotArraySchema,
@@ -150,7 +150,7 @@ export const bookingContract = contract.router({
    */
   listBookedSlots: {
     method: 'GET',
-    path: '/booked',
+    path: '/api/appointments/booked',
     query: bookingQuerySearchSchema,
     responses: {
       200: bookingMongoDbArraySchema,
@@ -180,7 +180,7 @@ export const bookingContract = contract.router({
   processPayment: {
     body: contract.type<void>(),
     method: 'POST',
-    path: '/:bookingId/pay',
+    path: '/api/appointments/:bookingId/pay',
     pathParams: bookingQueryParamsSchema,
     responses: {
       200: bookingPaymentSchema,
