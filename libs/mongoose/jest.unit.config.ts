@@ -1,9 +1,9 @@
 import type { Config } from 'jest';
 
-const testConfigs: Config = {
+const unitTestConfigs: Config = {
   displayName: 'lib-mongoose',
   preset: '../../jest.preset.js',
   testEnvironment: 'node',
 };
 
-export default testConfigs;
+export default unitTestConfigs;
