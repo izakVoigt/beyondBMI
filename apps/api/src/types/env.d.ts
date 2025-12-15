@@ -9,5 +9,6 @@ declare namespace NodeJS {
     MONGODB_URI: string;
     NODE_ENV: string;
     PORT: string;
+    STRIPE_SECRET_KEY: string;
   }
 }
