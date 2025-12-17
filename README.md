@@ -116,6 +116,7 @@ Uses PaymentIntents
 npm run lint:check
 npm run typecheck
 npm run test:unit
+npm run test:int
 ```
 
 🧼 Logging
