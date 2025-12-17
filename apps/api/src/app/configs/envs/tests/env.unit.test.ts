@@ -7,6 +7,7 @@ describe('env config - getEnv/env', () => {
 
   beforeEach(() => {
     jest.resetModules();
+    jest.unmock('dotenv/config');
     process.env = { ...ORIGINAL_ENV };
   });
 
@@ -65,7 +66,13 @@ describe('env config - getEnv/env', () => {
   });
 
   it('should throw during module import when envs are invalid', async () => {
-    process.env.NODE_ENV = baseInput.NODE_ENV;
+    jest.resetModules();
+    jest.doMock('dotenv/config', () => ({}));
+
+    process.env = {
+      NODE_ENV: baseInput.NODE_ENV,
+      // eslint-disable-next-line no-undef
+    } as NodeJS.ProcessEnv;
 
     await expect(import('../env')).rejects.toThrow(/Invalid environment variables:/);
   });

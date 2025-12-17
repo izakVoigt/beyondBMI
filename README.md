@@ -3,6 +3,7 @@
 This repository contains the **Booking API** for the Beyond project.
 
 The API is responsible for:
+
 - Slot availability
 - Booking creation and management
 - Payment processing with Stripe
@@ -24,9 +25,10 @@ The API uses the shared **booking library** as the single source of truth for:
   - `BUSINESS_END_MS`
 - **Slot utilities**
   - `slotKey`
-  - slot normalisation helpers
+  - slot normalization helpers
 
 This guarantees:
+
 - End-to-end type safety
 - No contract drift
 - Identical validation rules across all consumers
@@ -45,6 +47,7 @@ The API requires:
   "npm": ">=11.6.2"
 }
 ```
+
 Recommended setup using nvm:
 
 ```bash
@@ -77,6 +80,7 @@ NODE_ENV=development
 ```
 
 ▶️ Running the API
+
 ```bash
 npm run serve
 ```
@@ -85,28 +89,29 @@ The API will be available at: http://localhost:3000
 
 🔌 API Architecture Tech Stack
 
-* Express
-* ts-rest
-* MongoDB (Mongoose)
-* Stripe (PaymentIntents)
-* Zod
-* Pino (logging)
+- Express
+- ts-rest
+- MongoDB (Mongoose)
+- Stripe (PaymentIntents)
+- Zod
+- Pino (logging)
 
 💳 Stripe Integration
 Uses PaymentIntents
 
-* All sensitive operations handled server-side
-* Client secret returned to the consumer
-* Webhooks supported for future extensions
+- All sensitive operations handled server-side
+- Client secret returned to the consumer
+- Webhooks supported for future extensions
 
 🔐 Validation & Safety
 
-* All inputs validated with Zod
-* Strict typing enforced via ts-rest
-* Slot collisions are prevented at service level
-* Business rules are enforced centrally
+- All inputs validated with Zod
+- Strict typing enforced via ts-rest
+- Slot collisions are prevented at service level
+- Business rules are enforced centrally
 
 🧪 Testing & Quality
+
 ```bash
 npm run lint:check
 npm run typecheck
@@ -115,11 +120,12 @@ npm run test:unit
 
 🧼 Logging
 
-* Structured logging using Pino
-* HTTP logs via pino-http
-* Suitable for production observability
+- Structured logging using Pino
+- HTTP logs via pino-http
+- Suitable for production observability
 
 📦 Build
+
 ```bash
 npm run build
 ```
