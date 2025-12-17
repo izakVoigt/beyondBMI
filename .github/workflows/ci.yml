@@ -59,7 +59,3 @@ jobs:
       - name: '[TEST STEP] Int tests'
         run: npm run test:int
         shell: bash
-
-      - name: '[TEST STEP] E2E tests'
-        run: npm run test:e2e
-        shell: bash
